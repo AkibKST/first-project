@@ -27,6 +27,7 @@ export type Student = {
   id: string;
   name: UserName;
   gender: 'male' | 'female'; // union literal type
+  dateOfBirth: string;
   email: string;
   contactNo: string; // for counting zero(0)
   emergencyContactNo: string;
@@ -36,5 +37,5 @@ export type Student = {
   guardian: Guardian;
   localGuardian: LocalGuardian;
   profileImg?: string;
-  isActive: 'active' | 'inActive';
+  isActive: 'active' | 'blocked';
 };
