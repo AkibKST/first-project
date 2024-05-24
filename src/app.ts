@@ -6,8 +6,12 @@ const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+// Get a Controller call back function
+const getAController = (req: Request, res: Response) => {
+  const a = 10;
+  res.send(a);
+};
+
+app.get('/', getAController);
 
 export default app;
