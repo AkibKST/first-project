@@ -1,9 +1,21 @@
 import { Request, Response } from 'express';
 import { StudentServices } from './student.service';
+import studentValidationSchema from './student.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   try {
     const { student: studentData } = req.body; // name alias
+
+    const { error, value } = studentValidationSchema.validate(studentData);
+
+    // console.log(error, value);
+    if (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        error,
+      });
+    }
 
     // will call service func to send this data
     const result = await StudentServices.createStudentIntoDB(studentData);
@@ -15,7 +27,11 @@ const createStudent = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong',
+      error: error,
+    });
   }
 };
 

@@ -1,4 +1,5 @@
 import { Schema, model, connect } from 'mongoose';
+import validator from 'validator';
 import {
   Guardian,
   LocalGuardian,
@@ -6,61 +7,132 @@ import {
   UserName,
 } from './student.interface';
 
-// 2. Create a Schema corresponding to the document interface.
-
-//sub schema for UserNAme
+// Sub-schema for UserName
 const UserNameSchema = new Schema<UserName>({
-  firstName: { type: String, required: true },
-  middleName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: {
+    type: String,
+    required: [true, 'First Name is required'],
+    trim: true,
+    maxlength: [20, 'Name can not be more than 20 characters'],
+    validate: {
+      validator: function (value: string) {
+        const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1); //Akib
+        return firstNameStr === value;
+      },
+      message: '{VALUE} is not in capitalize format',
+    },
+  },
+  middleName: { type: String },
+  lastName: {
+    type: String,
+    required: [true, 'Last Name is required'],
+    validate: {
+      validator: (value: string) => validator.isAlpha(value),
+      message: '{VALUE} is not valid',
+    },
+  },
 });
 
-//sub guardian schema
+// Sub-schema for Guardian
 const guardianSchema = new Schema<Guardian>({
-  fatherName: { type: String, required: true },
-  fatherOccupation: { type: String, required: true },
-  fatherContactNo: { type: String, required: true },
-  matherName: { type: String, required: true },
-  matherOccupation: { type: String, required: true },
-  matherContactNo: { type: String, required: true },
+  fatherName: { type: String, required: [true, 'Father Name is required'] },
+  fatherOccupation: {
+    type: String,
+    required: [true, 'Father Occupation is required'],
+  },
+  fatherContactNo: {
+    type: String,
+    required: [true, 'Father Contact Number is required'],
+  },
+  matherName: { type: String, required: [true, 'Mother Name is required'] },
+  matherOccupation: {
+    type: String,
+    required: [true, 'Mother Occupation is required'],
+  },
+  matherContactNo: {
+    type: String,
+    required: [true, 'Mother Contact Number is required'],
+  },
 });
 
-//sub localGuardianSchema
+// Sub-schema for LocalGuardian
 const localGuardianSchema = new Schema<LocalGuardian>({
-  name: { type: String, required: true },
-  occupation: { type: String, required: true },
-  contactNo: { type: String, required: true },
-  address: { type: String, required: true },
+  name: { type: String, required: [true, 'Local Guardian Name is required'] },
+  occupation: {
+    type: String,
+    required: [true, 'Local Guardian Occupation is required'],
+  },
+  contactNo: {
+    type: String,
+    required: [true, 'Local Guardian Contact Number is required'],
+  },
+  address: {
+    type: String,
+    required: [true, 'Local Guardian Address is required'],
+  },
 });
 
-//main student Schema
+// Main Student Schema
 const studentSchema = new Schema<Student>({
-  id: { type: String },
-  name: UserNameSchema,
+  id: { type: String, required: [true, 'ID is required'], unique: true },
+  name: { type: UserNameSchema, required: [true, 'Name is required'] },
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
-    required: true,
-  }, //enum type
-  dateOfBirth: { type: String },
-  email: { type: String, required: true },
-  contactNo: { type: String, required: true },
-  emergencyContactNo: { type: String, required: true },
+    enum: {
+      values: ['male', 'female', 'other'],
+      message: "Gender must be either 'male', 'female', or 'other'.",
+    },
+    required: [true, 'Gender is required'],
+  },
+  dateOfBirth: { type: String, required: [true, 'Date of Birth is required'] },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    validate: {
+      validator: (value: string) => validator.isEmail(value),
+      message: '{VALUE} is not e valid email type',
+    },
+  },
+  contactNo: { type: String, required: [true, 'Contact Number is required'] },
+  emergencyContactNo: {
+    type: String,
+    required: [true, 'Emergency Contact Number is required'],
+  },
   bloodGroup: {
     type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+    enum: {
+      values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+      message:
+        "Blood Group must be one of 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'.",
+    },
   },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
+  presentAddress: {
+    type: String,
+    required: [true, 'Present Address is required'],
+  },
+  permanentAddress: {
+    type: String,
+    required: [true, 'Permanent Address is required'],
+  },
+  guardian: {
+    type: guardianSchema,
+    required: [true, 'Guardian information is required'],
+  },
+  localGuardian: {
+    type: localGuardianSchema,
+    required: [true, 'Local Guardian information is required'],
+  },
   profileImg: { type: String },
   isActive: {
     type: String,
-    enum: ['active', 'blocked'],
+    enum: {
+      values: ['active', 'blocked'],
+      message: "Status must be either 'active' or 'blocked'.",
+    },
     default: 'active',
   },
 });
 
-//create studentModel
-export const StudentModel = model<Student>('Student', studentSchema); //(pram1: 'ei name database e save hbe', pram2: schema)
+// Create Student Model
+export const StudentModel = model<Student>('Student', studentSchema);
