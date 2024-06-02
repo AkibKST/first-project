@@ -2,8 +2,11 @@ import { Student } from './student.interface';
 import { StudentModel } from './student.model';
 
 // ekta student made korlam
-const createStudentIntoDB = async (student: Student) => {
-  const result = await StudentModel.create(student);
+const createStudentIntoDB = async (studentData: Student) => {
+  // const result = await StudentModel.create(student);  // built in static method
+
+  const student = new StudentModel(studentData);
+  const result = await student.save(); // built in instance method
   return result;
 };
 
