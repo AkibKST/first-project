@@ -7,6 +7,9 @@ import {
   StudentModel,
   TUserName,
 } from './student.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
+import { nextTick } from 'process';
 
 // Sub-schema for UserName
 const UserNameSchema = new Schema<TUserName>({
@@ -79,7 +82,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   password: {
     type: String,
     required: [true, 'Password is required'],
-    unique: true,
+
     maxlength: [20, 'Password can not be more than 20 charactrer'],
   },
   name: { type: UserNameSchema, required: [true, 'Name is required'] },
@@ -139,16 +142,37 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     },
     default: 'active',
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // pre save middleware/hook
-studentSchema.pre('save', function () {
-  console.log(this, 'pre hook: we will save data');
+studentSchema.pre('save', async function (next) {
+  // console.log(this, 'pre hook: we will save data');
+  // hashing password and save into DB
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
 });
 
 //post save middleware/hook
-studentSchema.post('save', function () {
-  console.log(this, 'post hook: we saved data');
+studentSchema.post('save', function (doc, next) {
+  // console.log(this, 'post hook: we saved data');
+
+  doc.password = '';
+  next();
+});
+
+// Query Middleware
+
+studentSchema.pre('find', function (next) {
+  console.log(this);
+  next();
 });
 
 //creating a static method
