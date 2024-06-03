@@ -1,24 +1,39 @@
-import { Student } from './student.interface';
-import { StudentModel } from './student.model';
+import { TStudent } from './student.interface';
+import { Student } from './student.model';
 
 // ekta student made korlam
-const createStudentIntoDB = async (studentData: Student) => {
-  // const result = await StudentModel.create(student);  // built in static method
+const createStudentIntoDB = async (studentData: TStudent) => {
+  // ---------------------------------------
+  //check is user have with self made statics method
+  if (await Student.isUserExists(studentData.id)) {
+    throw new Error('User already exists!');
+  }
+  // ---------------------------------------
 
-  const student = new StudentModel(studentData);
-  const result = await student.save(); // built in instance method
+  const result = await Student.create(studentData); // built in static method
+
+  // ---------------------------------------
+
+  // const student = new Student(studentData); // create an instance
+
+  // if (await student.isUserExists(studentData.id)) {
+  //   throw new Error('User already exists!');
+  // }
+
+  // const result = await student.save(); // built in instance method
+
   return result;
 };
 
 // all student database thake niye aslam
 const getAllStudentFromDB = async () => {
-  const result = await StudentModel.find();
+  const result = await Student.find();
   return result;
 };
 
 // get a single student with param id
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await StudentModel.find({ id });
+  const result = await Student.find({ id });
   return result;
 };
 
