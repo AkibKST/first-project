@@ -1,39 +1,5 @@
 import { Request, Response } from 'express';
 import { StudentServices } from './student.service';
-import StudentValidationSchema from './student.validation';
-
-const createStudent = async (req: Request, res: Response) => {
-  try {
-    const { student: studentData } = req.body; // name alias
-
-    const zodParseData = StudentValidationSchema.parse(studentData);
-
-    // will call service func to send this data
-    const result = await StudentServices.createStudentIntoDB(zodParseData);
-
-    // // console.log(error, value);
-    // if (error) {
-    //   res.status(500).json({
-    //     success: false,
-    //     message: 'Something went wrong',
-    //     error,
-    //   });
-    // }
-
-    // send response
-    res.status(200).json({
-      success: true,
-      message: 'Student is created successfully',
-      data: result,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Something went wrong',
-      error: error,
-    });
-  }
-};
 
 const getAllStudents = async (req: Request, res: Response) => {
   try {
@@ -45,6 +11,8 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Student is retrieved successfully',
       data: result,
     });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -65,6 +33,7 @@ const getSingleStudent = async (req: Request, res: Response) => {
       message: 'Student is retrieved successfully',
       data: result,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -85,6 +54,7 @@ const deleteStudent = async (req: Request, res: Response) => {
       message: 'Student is deleted successfully',
       data: result,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -95,7 +65,6 @@ const deleteStudent = async (req: Request, res: Response) => {
 };
 
 export const StudentControllers = {
-  createStudent,
   getAllStudents,
   getSingleStudent,
   deleteStudent,
