@@ -1,20 +1,16 @@
+import { UserServices } from './user.service';
+
 const createStudent = async (req: Request, res: Response) => {
   try {
-    const { student: studentData } = req.body; // name alias
+    const { password, student: studentData } = req.body; // name alias
 
-    const zodParseData = StudentValidationSchema.parse(studentData);
+    // const zodParseData = StudentValidationSchema.parse(studentData);
 
     // will call service func to send this data
-    const result = await UserServices.createStudentIntoDB(zodParseData);
-
-    // // console.log(error, value);
-    // if (error) {
-    //   res.status(500).json({
-    //     success: false,
-    //     message: 'Something went wrong',
-    //     error,
-    //   });
-    // }
+    const result = await UserServices.createStudentIntoDB(
+      password,
+      studentData,
+    );
 
     // send response
     res.status(200).json({
@@ -22,11 +18,16 @@ const createStudent = async (req: Request, res: Response) => {
       message: 'Student is created successfully',
       data: result,
     });
-  } catch (error: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: error.message || 'Something went wrong',
       error: error,
     });
   }
+};
+
+export const UserController = {
+  createStudent,
 };

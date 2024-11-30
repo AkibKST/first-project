@@ -1,29 +1,36 @@
+import config from '../../config';
+import { TStudent } from '../student/student.interface';
 import { User } from './user.model';
 
 // ekta student made korlam
-const createStudentIntoDB = async (studentData: TStudent) => {
-  // ---------------------------------------
-  //check is user have with self made statics method
-  //   if (await Student.isUserExists(studentData.id)) {
-  //     throw new Error('User already exists!');
-  //   }
-  // ---------------------------------------
+const createStudentIntoDB = async (password: string, studentData: TStudent) => {
+  type NewUser = {};
 
-  const result = await User.create(studentData); // built in static method
+  // create a user object
+  let user = {};
 
-  // ---------------------------------------
+  // if password is not given, use default password
+  user.password = password || (config.default_password as string);
 
-  // const student = new Student(studentData); // create an instance
+  // set student role
+  user.role = 'student';
 
-  // if (await student.isUserExists(studentData.id)) {
-  //   throw new Error('User already exists!');
-  // }
+  // set manually generated id
+  user.id = '2030100001';
 
-  // const result = await student.save(); // built in instance method
+  // create a user
+  const result = await User.create(user); // built in static method
+
+  // create a student
+  if (Object.keys(result).length) {
+    // set id, _id as user
+    studentData.id = result.id;
+    studentData.user = result._id;
+  }
 
   return result;
 };
 
-export const UserService = {
+export const UserServices = {
   createStudentIntoDB,
 };
