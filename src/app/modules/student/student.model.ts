@@ -7,8 +7,6 @@ import {
   StudentModel,
   TUserName,
 } from './student.interface';
-import bcrypt from 'bcrypt';
-import config from '../../config';
 
 // Sub-schema for UserName
 const UserNameSchema = new Schema<TUserName>({
@@ -79,11 +77,12 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
     id: { type: String, required: [true, 'ID is required'], unique: true },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
 
-      maxlength: [20, 'Password can not be more than 20 charactrer'],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'UserID is required'],
+      unique: true,
+      ref: 'User',
     },
     name: { type: UserNameSchema, required: [true, 'Name is required'] },
     gender: {
@@ -137,14 +136,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Local Guardian information is required'],
     },
     profileImg: { type: String },
-    isActive: {
-      type: String,
-      enum: {
-        values: ['active', 'blocked'],
-        message: "Status must be either 'active' or 'blocked'.",
-      },
-      default: 'active',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -160,27 +151,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 //virtual
 studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
-
-// pre save middleware/hook
-studentSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook: we will save data');
-  // hashing password and save into DB
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds),
-  );
-  next();
-});
-
-//post save middleware/hook
-studentSchema.post('save', function (doc, next) {
-  // console.log(this, 'post hook: we saved data');
-
-  doc.password = '';
-  next();
 });
 
 // Query Middleware

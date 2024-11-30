@@ -1,34 +1,35 @@
 import config from '../../config';
 import { TStudent } from '../student/student.interface';
+import { Student } from '../student/student.model';
+import { TUser } from './user.interface';
 import { User } from './user.model';
 
 // ekta student made korlam
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
-  type NewUser = {};
-
   // create a user object
-  let user = {};
+  const userData: Partial<TUser> = {};
 
   // if password is not given, use default password
-  user.password = password || (config.default_password as string);
+  userData.password = password || (config.default_password as string);
 
   // set student role
-  user.role = 'student';
+  userData.role = 'student';
 
   // set manually generated id
-  user.id = '2030100001';
+  userData.id = '2030100001';
 
   // create a user
-  const result = await User.create(user); // built in static method
+  const newUser = await User.create(userData); // built in static method
 
   // create a student
-  if (Object.keys(result).length) {
+  if (Object.keys(newUser).length) {
     // set id, _id as user
-    studentData.id = result.id;
-    studentData.user = result._id;
-  }
+    studentData.id = newUser.id;
+    studentData.user = newUser._id; //reference _id
 
-  return result;
+    const newStudent = await Student.create(studentData);
+    return newStudent;
+  }
 };
 
 export const UserServices = {
