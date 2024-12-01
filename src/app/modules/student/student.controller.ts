@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { StudentServices } from './student.service';
+import sendResponse from '../../utils/sendResponse';
 
 const getAllStudents = async (
   req: Request,
@@ -10,17 +11,13 @@ const getAllStudents = async (
     const result = await StudentServices.getAllStudentFromDB();
 
     // send response
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: 'Student is retrieved successfully',
       data: result,
     });
   } catch (error) {
-    // res.status(500).json({
-    //   success: false,
-    //   message: error.message || 'Something went wrong',
-    //   error: error,
-    // });
     next(error);
   }
 };
@@ -35,12 +32,12 @@ const getSingleStudent = async (
     const result = await StudentServices.getSingleStudentFromDB(studentId);
 
     // send response
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: 'Student is retrieved successfully',
       data: result,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error) {
     next(error);
   }
