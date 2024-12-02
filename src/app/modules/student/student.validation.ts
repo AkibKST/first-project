@@ -45,47 +45,46 @@ const LocalGuardianValidationSchema = z.object({
 });
 
 // Zod Schema for Student
-const StudentValidationSchema = z.object({
-  id: z.string().nonempty({ message: 'ID is required' }),
-  password: z.string().nonempty({ message: 'Password is required' }).max(20),
-  name: UserNameValidationSchema,
-  gender: z.enum(['male', 'female', 'other'], {
-    errorMap: () => ({
-      message: "Gender must be either 'male', 'female', or 'other'.",
-    }),
-  }),
-  dateOfBirth: z.string().nonempty({ message: 'Date of Birth is required' }),
-  email: z
-    .string()
-    .email({ message: 'Email must be a valid email' })
-    .nonempty({ message: 'Email is required' }),
-  contactNo: z.string().nonempty({ message: 'Contact Number is required' }),
-  emergencyContactNo: z
-    .string()
-    .nonempty({ message: 'Emergency Contact Number is required' }),
-  bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
-    errorMap: () => ({
-      message:
-        "Blood Group must be one of 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'.",
-    }),
-  }),
-  presentAddress: z
-    .string()
-    .nonempty({ message: 'Present Address is required' }),
-  permanentAddress: z
-    .string()
-    .nonempty({ message: 'Permanent Address is required' }),
-  guardian: GuardianValidationSchema,
-  localGuardian: LocalGuardianValidationSchema,
-  profileImg: z.string().optional(),
-  isActive: z
-    .enum(['active', 'blocked'], {
-      errorMap: () => ({
-        message: "Status must be either 'active' or 'blocked'.",
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().nonempty({ message: 'Password is required' }).max(20),
+    student: z.object({
+      name: UserNameValidationSchema,
+      gender: z.enum(['male', 'female', 'other'], {
+        errorMap: () => ({
+          message: "Gender must be either 'male', 'female', or 'other'.",
+        }),
       }),
-    })
-    .default('active'),
-  isDeleted: z.boolean(),
+      dateOfBirth: z
+        .string()
+        .nonempty({ message: 'Date of Birth is required' }),
+      email: z
+        .string()
+        .email({ message: 'Email must be a valid email' })
+        .nonempty({ message: 'Email is required' }),
+      contactNo: z.string().nonempty({ message: 'Contact Number is required' }),
+      emergencyContactNo: z
+        .string()
+        .nonempty({ message: 'Emergency Contact Number is required' }),
+      bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], {
+        errorMap: () => ({
+          message:
+            "Blood Group must be one of 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'.",
+        }),
+      }),
+      presentAddress: z
+        .string()
+        .nonempty({ message: 'Present Address is required' }),
+      permanentAddress: z
+        .string()
+        .nonempty({ message: 'Permanent Address is required' }),
+      guardian: GuardianValidationSchema,
+      localGuardian: LocalGuardianValidationSchema,
+      profileImg: z.string().optional(),
+    }),
+  }),
 });
 
-export default StudentValidationSchema;
+export const studentValidations = {
+  createStudentValidationSchema,
+};
