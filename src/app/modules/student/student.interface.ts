@@ -28,7 +28,7 @@ export type TStudent = {
   user: Types.ObjectId;
   name: TUserName;
   gender: 'male' | 'female' | 'other'; // union literal type
-  dateOfBirth: string;
+  dateOfBirth: Date;
   email: string;
   contactNo: string; // for counting zero(0)
   emergencyContactNo: string;
