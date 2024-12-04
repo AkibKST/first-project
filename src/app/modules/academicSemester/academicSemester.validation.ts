@@ -1,28 +1,19 @@
 import { z } from 'zod';
+import {
+  AcademicSemesterCode,
+  AcademicSemesterName,
+  Months,
+} from './academicSemester.constant';
 
-// Months Enum
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-] as const;
-
-// Zod Validation Schema
+// Academic Semester Validation Schema
 export const createAcademicSemesterValidationSchema = z.object({
-  name: z.string().nonempty('Name is required'),
-  year: z.string().regex(/^\d{4}$/, 'Year must be a valid 4-digit year'),
-  code: z.string().nonempty('Code is required'),
-  startMonth: z.enum(months, { required_error: 'Start Month is required' }),
-  endMonth: z.enum(months, { required_error: 'End Month is required' }),
+  body: z.object({
+    name: z.enum([...AcademicSemesterName] as [string, ...string[]]),
+    year: z.date(),
+    code: z.enum([...AcademicSemesterCode] as [string, ...string[]]),
+    startMonth: z.enum([...Months] as [string, ...string[]]),
+    endMonth: z.enum([...Months] as [string, ...string[]]),
+  }),
 });
 
 export const AcademicSemesterValidation = {
