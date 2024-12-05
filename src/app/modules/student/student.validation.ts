@@ -55,7 +55,7 @@ const createStudentValidationSchema = z.object({
           message: "Gender must be either 'male', 'female', or 'other'.",
         }),
       }),
-      dateOfBirth: z.date().optional(),
+      dateOfBirth: z.string().optional(),
       email: z
         .string()
         .email({ message: 'Email must be a valid email' })
