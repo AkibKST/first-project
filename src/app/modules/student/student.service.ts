@@ -2,7 +2,9 @@ import { Student } from './student.model';
 
 // all student database thake niye aslam
 const getAllStudentFromDB = async () => {
-  const result = await Student.find();
+  const result = await Student.find()
+    .populate('admissionSemester')
+    .populate('academicDepartment');
   return result;
 };
 
