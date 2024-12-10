@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Student } from './student.model';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
+import { TStudent } from './student.interface';
 
 // all student database thake niye aslam
 const getAllStudentFromDB = async () => {
@@ -18,7 +19,7 @@ const getAllStudentFromDB = async () => {
 
 // get a single student with param id
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await Student.findById(id)
+  const result = await Student.findOne({ id })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -26,6 +27,15 @@ const getSingleStudentFromDB = async (id: string) => {
         path: 'academicFaculty',
       },
     });
+
+  //use aggregate
+  // const result = await Student.aggregate([{ $match: { id: id } }]);
+  return result;
+};
+
+//update a student with param id
+const updateStudentFromDB = async (id: string, payload: Partial<TStudent>) => {
+  const result = await Student.findOneAndUpdate({ id }, payload);
 
   //use aggregate
   // const result = await Student.aggregate([{ $match: { id: id } }]);
@@ -81,5 +91,6 @@ const deleteStudentFromDB = async (id: string) => {
 export const StudentServices = {
   getAllStudentFromDB,
   getSingleStudentFromDB,
+  updateStudentFromDB,
   deleteStudentFromDB,
 };
