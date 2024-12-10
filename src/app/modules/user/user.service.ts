@@ -52,7 +52,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     const newStudent = await Student.create([payload], { session });
 
     if (!newStudent.length) {
-      throw new AppError(202, 'Failed to create student');
+      throw new AppError(400, 'Failed to create student');
     }
 
     await session.commitTransaction();
@@ -62,7 +62,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
-    throw new Error('Failed to create student');
+    throw new AppError(400, 'Failed to create student');
   }
 };
 
