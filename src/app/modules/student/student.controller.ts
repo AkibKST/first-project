@@ -4,7 +4,7 @@ import catchAsync from '../../utils/catchAsync';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getAllStudents = catchAsync(async (req, res, next) => {
-  const result = await StudentServices.getAllStudentFromDB();
+  const result = await StudentServices.getAllStudentFromDB(req.query);
 
   // send response
   sendResponse(res, {
