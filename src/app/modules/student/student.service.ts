@@ -6,10 +6,15 @@ import { TStudent } from './student.interface';
 
 // all student database thake niye aslam
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  console.log('base query', query);
+  const queryObj = { ...query };
+
   // HOW OUR FORMAT SHOULD BE FOR PARTIAL MATCH  :
   // { email: { $regex : query.searchTerm , $options: i}}
   // { presentAddress: { $regex : query.searchTerm , $options: i}}
   // { 'name.firstName': { $regex : query.searchTerm , $options: i}}
+
+  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
 
   let searchTerm = ''; // SET DEFAULT VALUE
 
@@ -18,11 +23,20 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
     searchTerm = query?.searchTerm as string;
   }
 
-  const result = await Student.find({
-    $or: ['email', 'name.firstName', 'presentAddress'].map((field) => ({
+  //searchQuery
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field) => ({
       [field]: { $regex: searchTerm, $options: 'i' },
     })),
-  })
+  });
+
+  //filtering
+  const excludeFields = ['searchTerm', 'sort', 'limit'];
+
+  excludeFields.forEach((el) => delete queryObj[el]);
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -30,7 +44,23 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
         path: 'academicFaculty',
       },
     });
-  return result;
+
+  let sort = '-createdAt';
+
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  const sortQuery = filterQuery.sort(sort);
+
+  let limit = 1;
+  if (query.limit) {
+    limit = query.limit as number;
+  }
+
+  const limitQuery = await sortQuery.limit(limit);
+
+  return limitQuery;
 };
 
 // get a single student with param id
