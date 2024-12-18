@@ -17,8 +17,8 @@ const getAllStudents = catchAsync(async (req, res, next) => {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getSingleStudent = catchAsync(async (req, res, next) => {
-  const { studentId } = req.params;
-  const result = await StudentServices.getSingleStudentFromDB(studentId);
+  const { id } = req.params;
+  const result = await StudentServices.getSingleStudentFromDB(id);
 
   // send response
   sendResponse(res, {
@@ -30,9 +30,9 @@ const getSingleStudent = catchAsync(async (req, res, next) => {
 });
 
 const updateStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const { id } = req.params;
   const { student } = req.body;
-  const result = await StudentServices.updateStudentFromDB(studentId, student);
+  const result = await StudentServices.updateStudentFromDB(id, student);
 
   // send response
   res.status(200).json({
@@ -43,8 +43,8 @@ const updateStudent = catchAsync(async (req, res) => {
 });
 
 const deleteStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-  const result = await StudentServices.deleteStudentFromDB(studentId);
+  const { id } = req.params;
+  const result = await StudentServices.deleteStudentFromDB(id);
 
   // send response
   res.status(200).json({
