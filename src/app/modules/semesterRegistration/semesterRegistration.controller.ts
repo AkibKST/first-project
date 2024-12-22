@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
+import { SemesterRegistrationService } from './semesterRegistration.service';
 
 const createSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const result =
-      await ;
+      await SemesterRegistrationService.createSemesterRegistrationIntoDB(
+        req.body,
+      );
 
     sendResponse(res, {
       statusCode: 200,
@@ -18,8 +21,8 @@ const createSemesterRegistration = catchAsync(
 
 const getAllSemesterRegistrations = catchAsync(
   async (req: Request, res: Response) => {
-    const result =
-      await ;
+    // const result =
+    //   await ;
 
     sendResponse(res, {
       statusCode: 200,
@@ -34,8 +37,8 @@ const getSingleSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const result =
-      await;
+    // const result =
+    //   await;
 
     sendResponse(res, {
       statusCode: 200,
@@ -49,8 +52,8 @@ const getSingleSemesterRegistration = catchAsync(
 const updateSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result =
-      await ;
+    // const result =
+    //   await ;
 
     sendResponse(res, {
       statusCode: 200,
@@ -64,8 +67,8 @@ const updateSemesterRegistration = catchAsync(
 const deleteSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result =
-      await ;
+    // const result =
+    //   await ;
 
     sendResponse(res, {
       statusCode: 200,
