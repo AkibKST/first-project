@@ -5,6 +5,7 @@ import { SemesterRegistrationService } from './semesterRegistration.service';
 
 const createSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
+    // create semester registration with req.body
     const result =
       await SemesterRegistrationService.createSemesterRegistrationIntoDB(
         req.body,
@@ -21,8 +22,11 @@ const createSemesterRegistration = catchAsync(
 
 const getAllSemesterRegistrations = catchAsync(
   async (req: Request, res: Response) => {
-    // const result =
-    //   await ;
+    // get all semester data or search , sort, filter, pagination and limit with req.query
+    const result =
+      await SemesterRegistrationService.getAllSemesterRegistrationsFromDB(
+        req.query,
+      );
 
     sendResponse(res, {
       statusCode: 200,
@@ -35,10 +39,14 @@ const getAllSemesterRegistrations = catchAsync(
 
 const getSingleSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
+    // get single data with find by id
+
     const { id } = req.params;
 
-    // const result =
-    //   await;
+    const result =
+      await SemesterRegistrationService.getSingleSemesterRegistrationsFromDB(
+        id,
+      );
 
     sendResponse(res, {
       statusCode: 200,
@@ -51,9 +59,14 @@ const getSingleSemesterRegistration = catchAsync(
 
 const updateSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
+    // update semester registration with params id
     const { id } = req.params;
-    // const result =
-    //   await ;
+    const { payload } = req.body;
+    const result =
+      await SemesterRegistrationService.updateSemesterRegistrationIntoDB(
+        id,
+        payload,
+      );
 
     sendResponse(res, {
       statusCode: 200,

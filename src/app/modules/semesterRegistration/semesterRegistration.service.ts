@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { TSemesterRegistration } from './semesterRegistration.interface';
@@ -40,14 +41,45 @@ const createSemesterRegistrationIntoDB = async (
 
 const getAllSemesterRegistrationsFromDB = async (
   query: Record<string, unknown>,
-) => {};
+) => {
+  // step 1
+  // get all semester data or search , sort, filter, pagination and limit with QueryBuilder
 
-const getSingleSemesterRegistrationsFromDB = async (id: string) => {};
+  const semesterRegistrationQuery = new QueryBuilder(
+    SemesterRegistration.find().populate('academicSemester'),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await semesterRegistrationQuery.modelQuery;
+  return result;
+
+  // ----------------------------------
+};
+
+const getSingleSemesterRegistrationsFromDB = async (id: string) => {
+  // step 1
+  // get single semester data with params id
+
+  const result = await SemesterRegistration.findById(id);
+
+  return result;
+  // ----------------------------------
+};
 
 const updateSemesterRegistrationIntoDB = async (
   id: string,
   payload: Partial<TSemesterRegistration>,
-) => {};
+) => {
+  // step 1
+  // update single semester data with params id
+
+  return result;
+  // ----------------------------------
+};
 
 const deleteSemesterRegistrationFromDB = async (id: string) => {};
 
