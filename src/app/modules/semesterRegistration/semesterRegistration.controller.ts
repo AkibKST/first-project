@@ -61,11 +61,10 @@ const updateSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     // update semester registration with params id
     const { id } = req.params;
-    const { payload } = req.body;
     const result =
       await SemesterRegistrationService.updateSemesterRegistrationIntoDB(
         id,
-        payload,
+        req.body,
       );
 
     sendResponse(res, {
