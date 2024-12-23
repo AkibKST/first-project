@@ -79,7 +79,7 @@ const updateSemesterRegistration = catchAsync(
 const deleteSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    // const result =
+    const result = console.log(id);
     //   await ;
 
     sendResponse(res, {

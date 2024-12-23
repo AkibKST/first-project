@@ -3,6 +3,7 @@
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
+import { RegistrationStatus } from './semesterRegistration.constant';
 import { TSemesterRegistration } from './semesterRegistration.interface';
 import { SemesterRegistration } from './semesterRegistration.model';
 const createSemesterRegistrationIntoDB = async (
@@ -37,7 +38,10 @@ const createSemesterRegistrationIntoDB = async (
 
   const isThereAnyUpcomingOrOngoingSemester =
     await SemesterRegistration.findOne({
-      $or: [{ status: 'UPCOMING' }, { status: 'ONGOING' }],
+      $or: [
+        { status: RegistrationStatus.UPCOMING },
+        { status: RegistrationStatus.ONGOING },
+      ],
     });
 
   if (isThereAnyUpcomingOrOngoingSemester) {
@@ -103,12 +107,56 @@ const updateSemesterRegistrationIntoDB = async (
   // if the requested semester registration is ended, we will not update anything
   const currentSemesterStatus = isRequestedRegistrationExists?.status;
 
-  if (currentSemesterStatus === 'ENDED') {
+  if (currentSemesterStatus === RegistrationStatus.ENDED) {
     throw new AppError(
       404,
       `This semester is already ${currentSemesterStatus} !`,
     );
   }
+  // ----------------------------------
+
+  // step 3
+  // UPCOMING --> ONGOING --> ENDED
+  const requestedStatus = payload?.status;
+
+  // UPCOMING TO ENDED korte debo nah
+  if (
+    currentSemesterStatus === RegistrationStatus.UPCOMING &&
+    requestedStatus === RegistrationStatus.ENDED
+  ) {
+    throw new AppError(
+      404,
+      `You can not directly change status from ${currentSemesterStatus} to ${requestedStatus}!`,
+    );
+  }
+  // ----------------------------------
+
+  // step 4
+  // UPCOMING --> ONGOING --> ENDED
+
+  // ONGOING TO UPCOMING korte debo nah
+
+  if (
+    currentSemesterStatus === RegistrationStatus.ONGOING &&
+    requestedStatus === RegistrationStatus.UPCOMING
+  ) {
+    throw new AppError(
+      404,
+      `You can not directly change status from ${currentSemesterStatus} to ${requestedStatus}!`,
+    );
+  }
+  // ----------------------------------
+
+  // step 5
+  // UPDATE data model by id
+
+  const result = await SemesterRegistration.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+
   // ----------------------------------
 };
 
