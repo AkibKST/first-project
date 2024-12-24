@@ -8,12 +8,6 @@ const createStudent = catchAsync(async (req, res) => {
   // will call service func to send this data
   const result = await UserServices.createStudentIntoDB(password, studentData);
 
-  // send response
-  // res.status(200).json({
-  //   success: true,
-  //   message: 'Student is created successfully',
-  //   data: result,
-  // });
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -21,7 +15,34 @@ const createStudent = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const createFaculty = catchAsync(async (req, res) => {
+  const { password, faculty: facultyData } = req.body;
+
+  const result = await UserServices.createFacultyIntoDB(password, facultyData);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Faculty is created successfully',
+    data: result,
+  });
+});
+
+const createAdmin = catchAsync(async (req, res) => {
+  const { password, admin: adminData } = req.body;
+
+  const result = await UserServices.createAdminIntoDB(password, adminData);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Admin is created successfully',
+    data: result,
+  });
+});
 
 export const UserControllers = {
   createStudent,
+  createFaculty,
+  createAdmin,
 };

@@ -160,7 +160,7 @@ const updateSemesterRegistrationIntoDB = async (
   // ----------------------------------
 };
 
-const deleteSemesterRegistrationFromDB = async (id: string) => {};
+const deleteSemesterRegistrationFromDB = async () => {};
 
 export const SemesterRegistrationService = {
   createSemesterRegistrationIntoDB,
