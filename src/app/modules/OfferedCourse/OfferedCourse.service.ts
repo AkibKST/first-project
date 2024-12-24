@@ -35,6 +35,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
    * Step 10: create the offered course
    */
 
+  //Step 1: check if the semester registration id is exists!
   //check if the semester registration id is exists!
   const isSemesterRegistrationExits =
     await SemesterRegistration.findById(semesterRegistration);
@@ -42,7 +43,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   if (!isSemesterRegistrationExits) {
     throw new AppError(404, 'Semester registration not found !');
   }
+  // ---------------------------------------------------------
 
+  // Step 2: check if the academic faculty id is exists!
   const academicSemester = isSemesterRegistrationExits.academicSemester;
 
   const isAcademicFacultyExits =
@@ -51,27 +54,34 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   if (!isAcademicFacultyExits) {
     throw new AppError(404, 'Academic Faculty not found !');
   }
+  // ---------------------------------------------------------
 
+  //Step 3: check if the academic department id is exists!
   const isAcademicDepartmentExits =
     await AcademicDepartment.findById(academicDepartment);
 
   if (!isAcademicDepartmentExits) {
     throw new AppError(404, 'Academic Department not found !');
   }
+  // ---------------------------------------------------------
 
+  //Step 4: check if the course id is exists!
   const isCourseExits = await Course.findById(course);
 
   if (!isCourseExits) {
     throw new AppError(404, 'Course not found !');
   }
+  // ---------------------------------------------------------
 
+  //Step 5: check if the faculty id is exists!
   const isFacultyExits = await Faculty.findById(faculty);
 
   if (!isFacultyExits) {
     throw new AppError(404, 'Faculty not found !');
   }
+  // ---------------------------------------------------------
 
-  // check if the department is belong to the  faculty
+  //Step 6: check if the department is belong to the  faculty
   const isDepartmentBelongToFaculty = await AcademicDepartment.findOne({
     _id: academicDepartment,
     academicFaculty,
@@ -83,9 +93,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
       `This ${isAcademicDepartmentExits.name} is not  belong to this ${isAcademicFacultyExits.name}`,
     );
   }
+  // ---------------------------------------------------------
 
-  // check if the same offered course same section in same registered semester exists
-
+  //Step 7: check if the same offered course same section in same registered semester exists
   const isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection =
     await OfferedCourse.findOne({
       semesterRegistration,
@@ -99,8 +109,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
       `Offered course with same section is already exist!`,
     );
   }
+  // ---------------------------------------------------------
 
-  // get the schedules of the faculties
+  // Step 8: get the schedules of the faculties
   const assignedSchedules = await OfferedCourse.find({
     semesterRegistration,
     faculty,
@@ -112,18 +123,24 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     startTime,
     endTime,
   };
+  // ---------------------------------------------------------
 
+  //Step 9: check if the faculty is available at that time. If not then throw error
   if (hasTimeConflict(assignedSchedules, newSchedule)) {
     throw new AppError(
       400,
       `This faculty is not available at that time ! Choose other time or day`,
     );
   }
+  // ---------------------------------------------------------
 
+  //Step 10: create the offered course
   const result = await OfferedCourse.create({
     ...payload,
     academicSemester,
   });
+  // ---------------------------------------------------------
+
   return result;
 };
 
