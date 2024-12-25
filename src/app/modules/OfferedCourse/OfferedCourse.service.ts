@@ -176,6 +176,8 @@ const updateOfferedCourseIntoDB = async (
    * Step 4: check if the faculty is available at that time. If not then throw error
    * Step 5: update the offered course
    */
+
+  //Step 1: check if the offered course exists
   const { faculty, days, startTime, endTime } = payload;
 
   const isOfferedCourseExists = await OfferedCourse.findById(id);
@@ -183,13 +185,17 @@ const updateOfferedCourseIntoDB = async (
   if (!isOfferedCourseExists) {
     throw new AppError(404, 'Offered course not found !');
   }
+  // ---------------------------------------------------------
 
+  //Step 2: check if the faculty exists
   const isFacultyExists = await Faculty.findById(faculty);
 
   if (!isFacultyExists) {
     throw new AppError(404, 'Faculty not found !');
   }
+  // ---------------------------------------------------------
 
+  //Step 3: check if the semester registration status is upcoming
   const semesterRegistration = isOfferedCourseExists.semesterRegistration;
   // get the schedules of the faculties
 
@@ -203,7 +209,9 @@ const updateOfferedCourseIntoDB = async (
       `You can not update this offered course as it is ${semesterRegistrationStatus?.status}`,
     );
   }
+  // ---------------------------------------------------------
 
+  //Step 4: check if the faculty is available at that time. If not then throw error
   // check if the faculty is available at that time.
   const assignedSchedules = await OfferedCourse.find({
     semesterRegistration,
@@ -223,6 +231,7 @@ const updateOfferedCourseIntoDB = async (
       `This faculty is not available at that time ! Choose other time or day`,
     );
   }
+  // ---------------------------------------------------------
 
   const result = await OfferedCourse.findByIdAndUpdate(id, payload, {
     new: true,
@@ -236,11 +245,16 @@ const deleteOfferedCourseFromDB = async (id: string) => {
    * Step 2: check if the semester registration status is upcoming
    * Step 3: delete the offered course
    */
+
+  //Step 1: check if the offered course exists
   const isOfferedCourseExists = await OfferedCourse.findById(id);
 
   if (!isOfferedCourseExists) {
     throw new AppError(404, 'Offered Course not found');
   }
+  // ---------------------------------------------------------
+
+  //Step 2: check if the semester registration status is upcoming
 
   const semesterRegistation = isOfferedCourseExists.semesterRegistration;
 
@@ -254,9 +268,11 @@ const deleteOfferedCourseFromDB = async (id: string) => {
     );
   }
 
+  //Step 3: delete the offered course
   const result = await OfferedCourse.findByIdAndDelete(id);
 
   return result;
+  // ---------------------------------------------------------
 };
 
 export const OfferedCourseServices = {
