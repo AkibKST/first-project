@@ -1,6 +1,8 @@
+import config from '../../config';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
-import { TLoginUser } from './Auth.interface';
+import { TLoginUser } from './auth.interface';
+import jwt from 'jsonwebtoken';
 
 const loginUser = async (payload: TLoginUser) => {
   // step-1: checking if user is exists (with instance statics method)
@@ -37,7 +39,23 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   //------------------------------------------
-  return {};
+
+  //create token and send to the client
+
+  const jwtPayload = {
+    userId: user,
+    role: user.role,
+  };
+
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: '10d',
+  });
+
+  return {
+    accessToken,
+    needsPasswordChange: user?.needsPasswordChange,
+  };
+  //-----------------------------------------
 };
 
 export const AuthServices = {
