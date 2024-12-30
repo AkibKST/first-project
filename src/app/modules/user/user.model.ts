@@ -13,6 +13,7 @@ const userSchema = new Schema<TUser, UserModel>(
     password: {
       type: String,
       maxlength: [20, 'Password can not be more than 20 character'],
+      select: 0,
     },
     needsPasswordChange: {
       type: Boolean,
@@ -61,7 +62,7 @@ userSchema.post('save', function (doc, next) {
 
 //checking if user is exists (with instance statics method)
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
-  return await User.findOne({ id });
+  return await User.findOne({ id }).select('+password');
 };
 
 //checking if the password is correct
