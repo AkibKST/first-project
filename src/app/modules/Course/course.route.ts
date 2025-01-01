@@ -2,16 +2,22 @@ import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { CourseControllers } from './course.controller';
 import { CourseValidations } from './course.validation';
+import auth from '../../middlewares/auth';
 
 const router = express.Router();
 
 router.post(
   '/create-course',
+  auth('admin'),
   validateRequest(CourseValidations.createCourseValidationSchema),
   CourseControllers.createCourse,
 );
 
-router.get('/:id', CourseControllers.getSingleCourse);
+router.get(
+  '/:id',
+  auth('admin', 'student', 'faculty'),
+  CourseControllers.getSingleCourse,
+);
 
 router.patch(
   '/:id',
