@@ -12,12 +12,23 @@ export interface TUser {
 }
 
 export interface UserModel extends Model<TUser> {
-  //instance methods for checking if the user exist
+  //instance methods interface for checking if the user exist
   isUserExistsByCustomId(id: string): Promise<TUser>;
+  //--------------------------------------------------
+
+  //instance methods interface for checking if passwords are matched
   isPasswordMatched(
     plainTextPassword: string,
     hashedPassword: string,
   ): Promise<boolean>;
+  //--------------------------------------------------
+
+  //instance methods interface for checking if jwt issued before password changed
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number,
+  ): boolean;
+  //--------------------------------------------------
 }
 
 export type TUserRole = keyof typeof USER_ROLE;

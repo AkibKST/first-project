@@ -62,11 +62,13 @@ userSchema.post('save', function (doc, next) {
   doc.password = '';
   next();
 });
+//---------------------------------------------------------
 
 //checking if user is exists (with instance statics method)
 userSchema.statics.isUserExistsByCustomId = async function (id: string) {
   return await User.findOne({ id }).select('+password');
 };
+//---------------------------------------------------------
 
 //checking if the password is correct
 userSchema.statics.isPasswordMatched = async function (
@@ -75,6 +77,18 @@ userSchema.statics.isPasswordMatched = async function (
 ) {
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
+//---------------------------------------------------------
+
+//checking if passwordChangedTimestamp is gether than jwtIssuedTimestamp
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  console.log(passwordChangedTimestamp, jwtIssuedTimestamp);
+  // return passwordChangedTimestamp > jwtIssuedTimestamp
+};
+//---------------------------------------------------------
 
 // create model of mongoose by schema
 export const User = model<TUser, UserModel>('User', userSchema);
+//---------------------------------------------------------

@@ -4,6 +4,7 @@ import AppError from '../errors/AppError';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import { TUserRole } from '../modules/user/user.interface';
+import { User } from '../modules/user/user.model';
 
 //auth  middleware
 const auth = (...requiredRoles: TUserRole[]) => {
@@ -16,32 +17,52 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
     //-----------------------------------------------------
 
-    //check if the token is valid
-
-    jwt.verify(
+    // checking if the given token is valid
+    const decoded = jwt.verify(
       token,
       config.jwt_access_secret as string,
-      function (err, decoded) {
-        //err
-        if (err) {
-          throw new AppError(401, 'You are not authorized!');
-        }
+    ) as JwtPayload;
+    //--------------------------------------------------
 
-        // check if requiredRoles & decoded roles are valid
+    const { role, userId } = decoded;
 
-        const role = (decoded as JwtPayload).role;
-        if (requiredRoles && !requiredRoles.includes(role)) {
-          throw new AppError(401, 'You are not authorized!');
-        }
-        //--------------------------------------------------
+    // checking if the user is exist
+    const user = await User.isUserExistsByCustomId(userId);
 
-        //decoded
-        req.user = decoded as JwtPayload;
-        next();
-      },
-    );
-    //----------------------------------------
+    if (!user) {
+      throw new AppError(404, 'This user is not found !');
+    }
+    //--------------------------------------------------
+
+    // checking if the user is already deleted
+
+    const isDeleted = user?.isDeleted;
+
+    if (isDeleted) {
+      throw new AppError(403, 'This user is deleted !');
+    }
+    //--------------------------------------------------
+
+    // checking if the user is blocked
+    const userStatus = user?.status;
+
+    if (userStatus === 'blocked') {
+      throw new AppError(403, 'This user is blocked ! !');
+    }
+    //--------------------------------------------------
+
+    // check if requiredRoles & decoded roles are valid
+
+    if (requiredRoles && !requiredRoles.includes(role)) {
+      throw new AppError(401, 'You are not authorized!');
+    }
+    //--------------------------------------------------
+
+    //decoded
+    req.user = decoded as JwtPayload;
+    next();
   });
 };
+//--------------------------------------------------
 
 export default auth;
