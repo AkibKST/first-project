@@ -24,7 +24,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     ) as JwtPayload;
     //--------------------------------------------------
 
-    const { role, userId } = decoded;
+    const { role, userId, iat } = decoded;
 
     // checking if the user is exist
     const user = await User.isUserExistsByCustomId(userId);
@@ -48,6 +48,19 @@ const auth = (...requiredRoles: TUserRole[]) => {
 
     if (userStatus === 'blocked') {
       throw new AppError(403, 'This user is blocked ! !');
+    }
+    //--------------------------------------------------
+
+    //checking if passwordChangedTimestamp(eta jwt issue houer por korte jacchi kina) is gether than jwtIssuedTimestamp(age hoiche kina)
+    //jwt token e kono issue houer por password change korte chacche kina
+    if (
+      user.passwordChangedAt &&
+      User.isJWTIssuedBeforePasswordChanged(
+        user.passwordChangedAt,
+        iat as number,
+      )
+    ) {
+      throw new AppError(401, 'You are not authorized !');
     }
     //--------------------------------------------------
 

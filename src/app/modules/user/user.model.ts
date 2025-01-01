@@ -79,13 +79,14 @@ userSchema.statics.isPasswordMatched = async function (
 };
 //---------------------------------------------------------
 
-//checking if passwordChangedTimestamp is gether than jwtIssuedTimestamp
+//checking if passwordChangedTimestamp(eta jwt issue houer por korte jacchi kina) is gether than jwtIssuedTimestamp(age hoiche kina)
 userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
   passwordChangedTimestamp: Date,
   jwtIssuedTimestamp: number,
 ) {
-  console.log(passwordChangedTimestamp, jwtIssuedTimestamp);
-  // return passwordChangedTimestamp > jwtIssuedTimestamp
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
 };
 //---------------------------------------------------------
 
