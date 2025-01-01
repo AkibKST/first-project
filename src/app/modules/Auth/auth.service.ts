@@ -75,6 +75,8 @@ const changePassword = async (
   if (!user) {
     throw new AppError(404, 'This user is not found !');
   }
+  //----------------------------------------------
+
   // checking if the user is already deleted
 
   const isDeleted = user?.isDeleted;
@@ -82,6 +84,7 @@ const changePassword = async (
   if (isDeleted) {
     throw new AppError(401, 'This user is deleted !');
   }
+  //----------------------------------------------
 
   // checking if the user is blocked
 
@@ -90,17 +93,20 @@ const changePassword = async (
   if (userStatus === 'blocked') {
     throw new AppError(401, 'This user is blocked ! !');
   }
+  //----------------------------------------------
 
   //checking if the password is correct
 
   if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
     throw new AppError(401, 'Password do not matched');
+  //----------------------------------------------
 
   //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcrypt_salt_rounds),
   );
+  //----------------------------------------------
 
   await User.findOneAndUpdate(
     {
