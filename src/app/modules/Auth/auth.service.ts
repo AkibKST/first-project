@@ -5,6 +5,8 @@ import { TLoginUser } from './auth.interface';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { createToken } from './auth.utils';
+import { send } from 'process';
+import { sendEmail } from '../../utils/sendEmail';
 
 // Login User service
 
@@ -219,7 +221,7 @@ const forgetPassword = async (id: string) => {
     role: user.role,
   };
 
-  const accessToken = createToken(
+  const resetToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
     '10m',
@@ -227,11 +229,12 @@ const forgetPassword = async (id: string) => {
 
   // create reset UI Link
 
-  const resetUILink = `http://localhost:3000?id=${user.id}&token=${accessToken}`;
+  const resetUILink = `http://localhost:3000?id=${user.id}&token=${resetToken}`;
   //-----------------------
 
-  console.log(resetUILink);
-  // return resetUILink;
+  // send reset link to user email
+  sendEmail();
+  //-----------------------------
 };
 
 //------------------------------------
