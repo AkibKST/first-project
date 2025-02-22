@@ -190,8 +190,55 @@ const refreshToken = async (token: string) => {
 
 //------------------------------------
 
+//forget password and send reset link services
+const forgetPassword = async (id: string) => {
+  // checking if the user is exist
+  const user = await User.isUserExistsByCustomId(id);
+
+  if (!user) {
+    throw new AppError(404, 'This user is not found !');
+  }
+
+  // checking if the user is already deleted
+  const isDeleted = user?.isDeleted;
+
+  if (isDeleted) {
+    throw new AppError(403, 'This user is deleted !');
+  }
+
+  // checking if the user is blocked
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(403, 'This user is blocked ! !');
+  }
+
+  // create access token
+  const jwtPayload = {
+    userId: user.id,
+    role: user.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    '10m',
+  );
+
+  // create reset UI Link
+
+  const resetUILink = `http://localhost:3000?id=${user.id}&token=${accessToken}`;
+  //-----------------------
+
+  console.log(resetUILink);
+  // return resetUILink;
+};
+
+//------------------------------------
+
 export const AuthServices = {
   loginUser,
   changePassword,
   refreshToken,
+  forgetPassword,
 };
