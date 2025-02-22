@@ -1,21 +1,23 @@
 import nodemailer from 'nodemailer';
+import config from '../config';
 
-export const sendEmail = async () => {
+export const sendEmail = async (to: string, html: string) => {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
+    host: 'smtp.gmail.com.',
     port: 587,
-    secure: false, // true for port 465, false for other ports
+    secure: config.NODE_ENV === 'production',
     auth: {
-      user: 'maddison53@ethereal.email',
-      pass: 'jn7jnAPss4f63QBp6D',
+      // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+      user: 'akibkst22@gmail.com',
+      pass: 'cihq xpkm zpsi hqls',
     },
   });
 
   await transporter.sendMail({
-    from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
-    to: 'bar@example.com, baz@example.com', // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world?', // plain text body
-    html: '<b>Hello world?</b>', // html body
+    from: 'akibkst22@gmail.com', // sender address
+    to, // list of receivers
+    subject: 'Reset your password within ten mins!', // Subject line
+    text: 'voi paiyo nah...ei service banailam. tai tmk diye check korchi', // plain text body
+    html, // html body
   });
 };
