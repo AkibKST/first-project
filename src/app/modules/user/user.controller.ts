@@ -2,6 +2,7 @@ import { UserServices } from './user.service';
 import sendResponse from '../../utils/sendResponse';
 import catchAsync from '../../utils/catchAsync';
 
+//create student controller
 const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body; // name alias
 
@@ -15,6 +16,9 @@ const createStudent = catchAsync(async (req, res) => {
     data: result,
   });
 });
+//------------------------------
+
+//create faculty controller
 const createFaculty = catchAsync(async (req, res) => {
   const { password, faculty: facultyData } = req.body;
 
@@ -27,7 +31,9 @@ const createFaculty = catchAsync(async (req, res) => {
     data: result,
   });
 });
+//------------------------------
 
+//create admin controller
 const createAdmin = catchAsync(async (req, res) => {
   const { password, admin: adminData } = req.body;
 
@@ -40,9 +46,24 @@ const createAdmin = catchAsync(async (req, res) => {
     data: result,
   });
 });
+//------------------------------
+
+//create get me controller
+const getMe = catchAsync(async (req, res) => {
+  const result = await UserServices.getMe(req.headers.authorization as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Profile is retrieved successfully',
+    data: result,
+  });
+});
+//------------------------------
 
 export const UserControllers = {
   createStudent,
   createFaculty,
   createAdmin,
+  getMe,
 };

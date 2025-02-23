@@ -10,24 +10,39 @@ import { USER_ROLE } from './user.constant';
 const router = express.Router();
 
 //will call controller func
+
+// create student route access only by admin
 router.post(
   '/create-student',
   auth(USER_ROLE.admin),
   validateRequest(studentValidations.createStudentValidationSchema),
   UserControllers.createStudent,
 );
+//--------------------------
 
+// create faculty route access only by admin
 router.post(
   '/create-faculty',
   auth(USER_ROLE.admin),
   validateRequest(createFacultyValidationSchema),
   UserControllers.createFaculty,
 );
+//--------------------------
 
+// create admin route access only by admin
 router.post(
   '/create-admin',
   validateRequest(createAdminValidationSchema),
   UserControllers.createAdmin,
 );
+//--------------------------
+
+//create get me route access by all
+router.get(
+  '/me',
+  auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
+  UserControllers.getMe,
+);
+//--------------------------
 
 export const UserRoutes = router;

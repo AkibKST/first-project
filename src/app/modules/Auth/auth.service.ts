@@ -4,7 +4,7 @@ import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { createToken } from './auth.utils';
+import { createToken, verifyToken } from './auth.utils';
 import { sendEmail } from '../../utils/sendEmail';
 
 // Login User service
@@ -139,11 +139,7 @@ const changePassword = async (
 //create refresh token and set it
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
-
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
   const { userId, iat } = decoded;
 
   // checking if the user is exist

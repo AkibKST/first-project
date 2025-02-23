@@ -18,8 +18,9 @@ import { TAdmin } from '../Admin/admin.interface';
 import { Faculty } from '../Faculty/faculty.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { TFaculty } from '../Faculty/faculty.interface';
+import { verifyToken } from '../Auth/auth.utils';
 
-// ekta student made korlam
+// create student service
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
   const userData: Partial<TUser> = {};
@@ -73,10 +74,13 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
+    console.log(err);
     throw new AppError(400, 'Failed to create student');
   }
 };
+//--------------------------
 
+// create faculty service
 const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   // create a user object
   const userData: Partial<TUser> = {};
@@ -133,7 +137,9 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     throw new Error(err);
   }
 };
+//--------------------------
 
+// create admin service
 const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   // create a user object
   const userData: Partial<TUser> = {};
@@ -180,9 +186,34 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     throw new Error(err);
   }
 };
+//--------------------------
+
+//create get me service
+const getMe = async (token: string) => {
+  // decode token
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
+
+  const { userId, role } = decoded;
+
+  let result = null;
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId }).populate('user');
+  }
+  if (role === 'admin') {
+    result = await Admin.findOne({ id: userId }).populate('user');
+  }
+
+  if (role === 'faculty') {
+    result = await Faculty.findOne({ id: userId }).populate('user');
+  }
+
+  return result;
+};
+//--------------------------
 
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
 };
