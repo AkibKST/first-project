@@ -238,7 +238,8 @@ const forgetPassword = async (id: string) => {
 //------------------------------------
 
 //reset password service
-const resetPassword = async (id: string, newPassword: string, token) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const resetPassword = async (id: string, newPassword: string, token: any) => {
   // checking if the user is exist
   const user = await User.isUserExistsByCustomId(id);
 
@@ -260,6 +261,17 @@ const resetPassword = async (id: string, newPassword: string, token) => {
     throw new AppError(403, 'This user is blocked ! !');
   }
 
+  // checking if the token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+
+  if (decoded.userId !== id) {
+    throw new AppError(401, 'You are forbidden !');
+  }
+  //--------------------------------
+
   // hash new password
   const newHashedPassword = await bcrypt.hash(
     newPassword,
@@ -269,10 +281,12 @@ const resetPassword = async (id: string, newPassword: string, token) => {
   // update password by id
   await User.findOneAndUpdate(
     {
-      id: id,
+      id: decoded.userId,
+      role: decoded.role,
     },
     {
       password: newHashedPassword,
+      needsPasswordChange: false,
       passwordChangedAt: new Date(),
     },
   );
