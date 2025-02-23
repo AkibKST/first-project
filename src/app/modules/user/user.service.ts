@@ -18,7 +18,6 @@ import { TAdmin } from '../Admin/admin.interface';
 import { Faculty } from '../Faculty/faculty.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { TFaculty } from '../Faculty/faculty.interface';
-import { verifyToken } from '../Auth/auth.utils';
 
 // create student service
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
@@ -74,7 +73,6 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
-    console.log(err);
     throw new AppError(400, 'Failed to create student');
   }
 };
@@ -189,12 +187,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 //--------------------------
 
 //create get me service
-const getMe = async (token: string) => {
-  // decode token
-  const decoded = verifyToken(token, config.jwt_access_secret as string);
-
-  const { userId, role } = decoded;
-
+const getMe = async (userId: string, role: string) => {
   let result = null;
   if (role === 'student') {
     result = await Student.findOne({ id: userId }).populate('user');
@@ -211,9 +204,19 @@ const getMe = async (token: string) => {
 };
 //--------------------------
 
+//change status service
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+  return result;
+};
+//--------------------------
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
   getMe,
+  changeStatus,
 };
