@@ -235,7 +235,48 @@ const forgetPassword = async (id: string) => {
   sendEmail(user.email, resetUILink);
   //-----------------------------
 };
+//------------------------------------
 
+//reset password service
+const resetPassword = async (id: string, newPassword: string, token) => {
+  // checking if the user is exist
+  const user = await User.isUserExistsByCustomId(id);
+
+  if (!user) {
+    throw new AppError(404, 'This user is not found !');
+  }
+
+  // checking if the user is already deleted
+  const isDeleted = user?.isDeleted;
+
+  if (isDeleted) {
+    throw new AppError(403, 'This user is deleted !');
+  }
+
+  // checking if the user is blocked
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(403, 'This user is blocked ! !');
+  }
+
+  // hash new password
+  const newHashedPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  // update password by id
+  await User.findOneAndUpdate(
+    {
+      id: id,
+    },
+    {
+      password: newHashedPassword,
+      passwordChangedAt: new Date(),
+    },
+  );
+};
 //------------------------------------
 
 export const AuthServices = {
@@ -243,4 +284,5 @@ export const AuthServices = {
   changePassword,
   refreshToken,
   forgetPassword,
+  resetPassword,
 };
