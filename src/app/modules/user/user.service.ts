@@ -18,9 +18,14 @@ import { TAdmin } from '../Admin/admin.interface';
 import { Faculty } from '../Faculty/faculty.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { TFaculty } from '../Faculty/faculty.interface';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 // create student service
-const createStudentIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (
+  file: any,
+  password: string,
+  payload: TStudent,
+) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -30,8 +35,6 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // set student role and email
   userData.role = 'student';
   userData.email = payload.email;
-
-  // set generated id
 
   // find academic semester info
   const admissionSemester = await AcademicSemester.findById(
@@ -47,6 +50,12 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
       admissionSemester as TAcademicSemester,
     );
 
+    //send image to cloudinary
+    const imageName = `${userData.id}${payload?.name?.firstName}`;
+    const path = file?.path;
+    //send image to cloudinary
+    const { secure_url }: any = await sendImageToCloudinary(imageName, path);
+
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // array
 
@@ -57,6 +66,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     // set id , _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
+    payload.profileImg = secure_url;
 
     // create a student (transaction-2)
 

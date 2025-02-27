@@ -47,7 +47,7 @@ const createLocalGuardianValidationSchema = z.object({
 // Zod Schema for create Student
 const createStudentValidationSchema = z.object({
   body: z.object({
-    password: z.string().nonempty({ message: 'Password is required' }).max(20),
+    password: z.string().optional(),
     student: z.object({
       name: createUserNameValidationSchema,
       gender: z.enum(['male', 'female', 'other'], {
@@ -78,7 +78,7 @@ const createStudentValidationSchema = z.object({
         .nonempty({ message: 'Permanent Address is required' }),
       guardian: createGuardianValidationSchema,
       localGuardian: createLocalGuardianValidationSchema,
-      profileImg: z.string().optional(),
+      // profileImg: z.string().optional(),
       admissionSemester: z.string(),
       academicDepartment: z.string(),
     }),

@@ -4,10 +4,15 @@ import catchAsync from '../../utils/catchAsync';
 
 //create student controller
 const createStudent = catchAsync(async (req, res) => {
+  console.log(req.file);
   const { password, student: studentData } = req.body; // name alias
 
   // will call service func to send this data
-  const result = await UserServices.createStudentIntoDB(password, studentData);
+  const result = await UserServices.createStudentIntoDB(
+    req.file,
+    password,
+    studentData,
+  );
 
   sendResponse(res, {
     statusCode: 200,
