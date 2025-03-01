@@ -17,7 +17,9 @@ const createOfferedCourse = catchAsync(async (req: Request, res: Response) => {
 
 const getAllOfferedCourses = catchAsync(async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: any = [];
+  const result = await OfferedCourseServices.getAllOfferedCoursesFromDB(
+    req.query,
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -29,7 +31,8 @@ const getAllOfferedCourses = catchAsync(async (req: Request, res: Response) => {
 const getSingleOfferedCourses = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = [id];
+    const result = await OfferedCourseServices.getSingleOfferedCourseFromDB(id);
+
     sendResponse(res, {
       statusCode: 200,
       success: true,
